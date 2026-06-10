@@ -60,7 +60,9 @@ export function Modal({
     maxWidth,
     width: "90%",
     maxHeight: "90vh",
-    overflow: "auto",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
   };
 
