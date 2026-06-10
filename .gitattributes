@@ -1,0 +1,5 @@
+# Force LF for all shell scripts and Ruby binstubs
+*.sh text eol=lf
+*.rb text eol=lf
+backend/bin/* text eol=lf
+backend/bin/docker-entrypoint text eol=lf

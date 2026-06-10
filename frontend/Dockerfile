@@ -5,8 +5,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Delete any Windows-generated lockfile and install fresh for Linux
+RUN rm -f package-lock.json && npm install
 
 # Copy the rest of the application
 COPY . .
