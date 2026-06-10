@@ -6,7 +6,7 @@ RSpec.describe "Api::Expenses", type: :request do
 
   describe "GET /api/expenses" do
   let!(:expense1) { Expense.create!(description: "Lunch", amount: 100.00, category: food_category, date: Date.today) }
-  let!(:expense2) { Expense.create!(description: "Taxi", amount: 50.00, category: transport_category, date: Date.today) }
+  let!(:expense2) { Expense.create!(description: "Taxi", amount: 50.00, category: transport_category, date: Date.today - 1) }
 
     it "returns all expenses with category information" do
       get "/api/expenses"
@@ -20,8 +20,26 @@ RSpec.describe "Api::Expenses", type: :request do
       get "/api/expenses"
 
       json = JSON.parse(response.body)
-      expect(json.first["id"]).to eq(expense2.id)
-      expect(json.last["id"]).to eq(expense1.id)
+      expect(json.first["id"]).to eq(expense1.id)
+      expect(json.last["id"]).to eq(expense2.id)
+    end
+
+    context "when filtering by year and month" do
+      let(:last_month_date) { Date.today << 1 }
+      let!(:this_month_expense) do
+        Expense.create!(description: "This Month", amount: 100.00, category: food_category, date: Date.today)
+      end
+      let!(:last_month_expense) do
+        Expense.create!(description: "Last Month", amount: 50.00, category: transport_category, date: last_month_date)
+      end
+
+      it "filters by the expense date column, not the created_at column" do
+        get "/api/expenses", params: { year: last_month_date.year, month: last_month_date.month }
+
+        json = JSON.parse(response.body)
+        expect(json.length).to eq(1)
+        expect(json.first["description"]).to eq("Last Month")
+      end
     end
   end
 
@@ -46,7 +64,7 @@ RSpec.describe "Api::Expenses", type: :request do
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
         expect(json["description"]).to eq("Team Lunch")
-        expect(json["amount"]).to eq("150.5")
+        expect(json["amount"]).to eq(150.5)
       end
     end
 
